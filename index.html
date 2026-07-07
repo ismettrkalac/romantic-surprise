@@ -282,6 +282,75 @@
     animation: fadeInUp 1s ease 1.3s forwards;
   }
 
+  .heart-counter{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    margin-bottom: 28px;
+    opacity:0;
+    animation: fadeInUp 1s ease 1.5s forwards;
+  }
+
+  #kiss-heart{
+    border:none;
+    background: transparent;
+    color: var(--burgundy);
+    font-size: clamp(2rem, 6vw, 2.8rem);
+    line-height:1;
+    cursor:pointer;
+    text-shadow: 0 0 20px rgba(244,166,193,0.55);
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+
+  #kiss-heart:hover{
+    transform: scale(1.08);
+    filter: brightness(1.05);
+  }
+
+  #kiss-heart:active{
+    transform: scale(0.95);
+  }
+
+  #kiss-heart.done{
+    cursor:default;
+  }
+
+  .heart-counter-text{
+    min-height: 24px;
+    font-size: clamp(0.95rem, 2.4vw, 1.05rem);
+    color: var(--burgundy);
+    letter-spacing: 0.02em;
+  }
+
+  .heart-counter-text.revealed{
+    animation: fadeInUp 0.45s ease;
+  }
+
+  .kiss-found{
+    min-height: 26px;
+    font-size: clamp(0.98rem, 2.5vw, 1.08rem);
+    color: var(--burgundy-deep);
+    opacity:0;
+    transform: translateY(8px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+
+  .kiss-found.show{
+    opacity:1;
+    transform: translateY(0);
+  }
+
+  .tiny-footer{
+    margin-top: 26px;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    letter-spacing: 0.03em;
+    color: rgba(92,21,48,0.72);
+    opacity:0;
+    animation: fadeInUp 1s ease 1.9s forwards;
+  }
+
   @keyframes fadeInUp{
     from{ opacity:0; transform: translateY(16px); }
     to{ opacity:1; transform: translateY(0); }
@@ -363,9 +432,11 @@
   }
 
   .ending-lily{
+    position: relative;
     filter: drop-shadow(0 8px 16px rgba(122,31,61,0.12));
     transform-origin: bottom center;
     animation: lilySway 4.8s ease-in-out infinite;
+    cursor: pointer;
   }
 
   .ending-lily:nth-child(2n){
@@ -378,6 +449,29 @@
 
   .ending-lily.tall{
     margin-bottom: 8px;
+  }
+
+  .flower-note{
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    transform: translateX(-50%) translateY(8px);
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255,250,249,0.96);
+    border: 1px solid rgba(122,31,61,0.12);
+    color: var(--burgundy);
+    font-size: 0.82rem;
+    white-space: nowrap;
+    box-shadow: 0 8px 18px rgba(122,31,61,0.12);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .ending-lily:hover .flower-note{
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 
   /* ---------- Confetti & sparkle canvas layers ---------- */
@@ -506,12 +600,19 @@
         Every day with you is my favorite day. ❤️
       </p>
       <p class="signature">Forever yours,<br>Ismet ❤️</p>
+      <div class="heart-counter">
+        <button id="kiss-heart" type="button" aria-label="Count my kisses">🌝</button>
+        <div class="heart-counter-text" id="heart-counter-text">Click me</div>
+        <div class="kiss-found" id="kiss-found">You found all my kisses 😘</div>
+      </div>
       <button id="reveal-btn">One more thing...</button>
 
       <div class="final-message" id="final-message">
         <p>Zauvek samo ti.</p>
         <div class="ending-lilies" id="ending-lilies" aria-hidden="true"></div>
       </div>
+
+      <p class="tiny-footer">Made with ❤️ by someone who misses you every day.</p>
     </div>
   </div>
 
@@ -629,11 +730,15 @@
   var revealBtn = document.getElementById('reveal-btn');
   var finalMessage = document.getElementById('final-message');
   var endingLilies = document.getElementById('ending-lilies');
+  var kissHeart = document.getElementById('kiss-heart');
+  var heartCounterText = document.getElementById('heart-counter-text');
+  var kissFound = document.getElementById('kiss-found');
   var effectsLayer = document.getElementById('effects-layer');
   var musicToggle = document.getElementById('music-toggle');
   var musicStatus = document.getElementById('music-status');
   var bgMusic = document.getElementById('bg-music');
   var musicStatusTimer = null;
+  var kissCount = 0;
 
   function showMusicStatus(message){
     musicStatus.textContent = message;
@@ -677,23 +782,44 @@
 
   updateMusicButton();
 
+  kissHeart.addEventListener('click', function(){
+    if (kissCount >= 3){
+      return;
+    }
+
+    kissCount += 1;
+    heartCounterText.textContent = kissCount < 3 ? '❤️ ' + kissCount + '  Click me more' : '❤️ ' + kissCount;
+    heartCounterText.classList.remove('revealed');
+    void heartCounterText.offsetWidth;
+    heartCounterText.classList.add('revealed');
+
+    if (kissCount === 3){
+      kissHeart.classList.add('done');
+      kissFound.classList.add('show');
+    }
+  });
+
   function renderEndingLilies(){
     if (endingLilies.children.length){
       return;
     }
 
     var bouquet = [
-      { size: 64, shade: 'light', className: 'ending-lily' },
-      { size: 82, shade: 'mid', className: 'ending-lily tall' },
-      { size: 74, shade: 'deep', className: 'ending-lily' },
-      { size: 82, shade: 'mid', className: 'ending-lily tall' },
-      { size: 64, shade: 'light', className: 'ending-lily' }
+      { size: 64, shade: 'light', className: 'ending-lily', note: 'Just like you.' },
+      { size: 82, shade: 'mid', className: 'ending-lily tall', note: 'Beautiful.' },
+      { size: 74, shade: 'deep', className: 'ending-lily', note: 'Just like you.' },
+      { size: 82, shade: 'mid', className: 'ending-lily tall', note: 'Beautiful.' },
+      { size: 64, shade: 'light', className: 'ending-lily', note: 'Just like you.' }
     ];
 
     bouquet.forEach(function(item){
       var flower = document.createElement('div');
       flower.className = item.className;
       flower.innerHTML = lilySVG(item.size, item.shade);
+      var note = document.createElement('span');
+      note.className = 'flower-note';
+      note.textContent = item.note;
+      flower.appendChild(note);
       endingLilies.appendChild(flower);
     });
   }
