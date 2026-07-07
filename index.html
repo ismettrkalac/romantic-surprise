@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>For You ❤</title>
+<title>Duša mua ❤</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -329,7 +329,7 @@
   }
 
   .final-message.show{
-    max-height: 300px;
+    max-height: 520px;
     opacity:1;
   }
 
@@ -342,6 +342,42 @@
     text-shadow: 0 0 18px rgba(217,178,106,0.5);
     padding-top: 22px;
     border-top: 1px solid rgba(122,31,61,0.2);
+  }
+
+  .ending-lilies{
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    gap:10px;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(122,31,61,0.12);
+    opacity:0;
+    transform: translateY(14px) scale(0.96);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+
+  .ending-lilies.show{
+    opacity:1;
+    transform: translateY(0) scale(1);
+  }
+
+  .ending-lily{
+    filter: drop-shadow(0 8px 16px rgba(122,31,61,0.12));
+    transform-origin: bottom center;
+    animation: lilySway 4.8s ease-in-out infinite;
+  }
+
+  .ending-lily:nth-child(2n){
+    animation-duration: 5.2s;
+  }
+
+  .ending-lily:nth-child(3n){
+    animation-duration: 5.8s;
+  }
+
+  .ending-lily.tall{
+    margin-bottom: 8px;
   }
 
   /* ---------- Confetti & sparkle canvas layers ---------- */
@@ -424,6 +460,11 @@
     transform: translateY(0);
   }
 
+  @keyframes lilySway{
+    0%, 100%{ transform: rotate(-2deg); }
+    50%{ transform: rotate(2deg); }
+  }
+
   @keyframes twinkle{
     0%, 100%{ opacity:0; transform: scale(0.4) rotate(0deg); }
     50%{ opacity:1; transform: scale(1.1) rotate(90deg); }
@@ -468,7 +509,8 @@
       <button id="reveal-btn">One more thing...</button>
 
       <div class="final-message" id="final-message">
-        <p>I'll choose you today, tomorrow, and every day after.</p>
+        <p>Zauvek samo ti.</p>
+        <div class="ending-lilies" id="ending-lilies" aria-hidden="true"></div>
       </div>
     </div>
   </div>
@@ -586,6 +628,7 @@
   // ---------- "One more thing..." reveal ----------
   var revealBtn = document.getElementById('reveal-btn');
   var finalMessage = document.getElementById('final-message');
+  var endingLilies = document.getElementById('ending-lilies');
   var effectsLayer = document.getElementById('effects-layer');
   var musicToggle = document.getElementById('music-toggle');
   var musicStatus = document.getElementById('music-status');
@@ -633,6 +676,27 @@
   });
 
   updateMusicButton();
+
+  function renderEndingLilies(){
+    if (endingLilies.children.length){
+      return;
+    }
+
+    var bouquet = [
+      { size: 64, shade: 'light', className: 'ending-lily' },
+      { size: 82, shade: 'mid', className: 'ending-lily tall' },
+      { size: 74, shade: 'deep', className: 'ending-lily' },
+      { size: 82, shade: 'mid', className: 'ending-lily tall' },
+      { size: 64, shade: 'light', className: 'ending-lily' }
+    ];
+
+    bouquet.forEach(function(item){
+      var flower = document.createElement('div');
+      flower.className = item.className;
+      flower.innerHTML = lilySVG(item.size, item.shade);
+      endingLilies.appendChild(flower);
+    });
+  }
 
   function burstFloaters(){
     for (var i = 0; i < 30; i++){
@@ -720,6 +784,10 @@
     setTimeout(function(){
       sparkleField();
       finalMessage.classList.add('show');
+      renderEndingLilies();
+      setTimeout(function(){
+        endingLilies.classList.add('show');
+      }, 420);
     }, 500);
   });
 
