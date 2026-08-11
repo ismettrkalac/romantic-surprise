@@ -22,8 +22,9 @@ function addPhoto(figure, path, index) {
   const image = new Image();
   image.src = path;
   image.alt = `Naša uspomena ${index + 1}`;
-  image.loading = "lazy";
+  image.loading = index === 0 ? "eager" : "lazy";
   image.decoding = "async";
+  if (index === 0) image.fetchPriority = "high";
   image.addEventListener("error", () => {
     const placeholder = document.createElement("span");
     placeholder.className = "photo-placeholder";
@@ -57,7 +58,13 @@ psTrigger.addEventListener("click", () => {
   psTrigger.setAttribute("aria-expanded", "true");
   psTrigger.setAttribute("aria-disabled", "true");
   psMessage.setAttribute("aria-hidden", "false");
-  psFirst.classList.add("is-visible");
+  psMessage.hidden = false;
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      psFirst.classList.add("is-visible");
+    });
+  });
 
   window.setTimeout(() => {
     psSecond.classList.add("is-visible");

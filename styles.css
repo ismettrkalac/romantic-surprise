@@ -15,7 +15,7 @@ html { background: var(--night); }
 
 body {
   margin: 0;
-  min-width: 320px;
+  width: 100%;
   overflow-x: hidden;
   background: var(--night);
   color: var(--ink);
@@ -57,6 +57,7 @@ button:focus-visible {
 }
 
 .intro button {
+  min-height: 44px;
   padding: 9px 0 7px;
   border: 0;
   border-bottom: 1px solid rgba(238, 226, 212, .45);
@@ -248,6 +249,12 @@ button:focus-visible {
   color: var(--wine);
 }
 
+.ps-trigger:focus-visible {
+  outline: none;
+  border-color: rgba(108, 40, 55, .6);
+  color: var(--wine);
+}
+
 .ps-trigger[aria-disabled="true"] {
   cursor: default;
   pointer-events: none;
@@ -257,6 +264,8 @@ button:focus-visible {
   min-height: 118px;
   margin-top: 38px;
 }
+
+.ps-message[hidden] { display: none; }
 
 .ps-line {
   margin: 0;
@@ -284,6 +293,68 @@ button:focus-visible {
   .photo-main { width: 88%; }
   .small-photos { width: 82%; }
   .photo-note { right: -25px; bottom: 18px; }
+}
+
+@media (max-width: 480px) {
+  #letter-view {
+    padding: 0;
+    background: var(--paper);
+  }
+
+  .letter {
+    width: 100%;
+    padding: max(20px, env(safe-area-inset-top)) 16px 0;
+    box-shadow: none;
+  }
+
+  .letter-kicker { margin-bottom: 18px; }
+
+  .photo { padding: 6px; }
+
+  .photo-main { margin-bottom: 58px; }
+
+  .photo-note {
+    right: 1px;
+    bottom: -33px;
+    max-width: calc(100% - 10px);
+    white-space: nowrap;
+  }
+
+  .letter-copy p {
+    margin-bottom: 1.05em;
+    font-size: clamp(1.4rem, 6.5vw, 1.7rem);
+    line-height: 1.22;
+  }
+
+  .letter-copy p:first-child {
+    margin-bottom: 1.15em;
+    font-size: clamp(2.15rem, 10vw, 2.75rem);
+  }
+
+  .letter-copy .sign-off { margin-top: 1.65em; }
+
+  .small-photos {
+    gap: 10px;
+    margin: 54px auto 42px;
+  }
+
+  .flowers { margin-top: 58px; }
+
+  .flowers p { margin-bottom: 12px; }
+
+  .bouquet { width: min(62vw, 210px); }
+
+  .secret-ps {
+    min-height: 410px;
+    padding: 150px 0 max(105px, env(safe-area-inset-bottom));
+  }
+
+  .ps-message {
+    min-height: 102px;
+    margin-top: 30px;
+  }
+
+  .ps-line { font-size: clamp(1.35rem, 6.4vw, 1.75rem); }
 }
 
 @media (prefers-reduced-motion: reduce) {
