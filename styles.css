@@ -124,6 +124,25 @@ button:focus-visible {
   transform: rotate(-.6deg);
 }
 
+.photo-note {
+  position: absolute;
+  right: -3px;
+  bottom: -35px;
+  margin: 0;
+  color: rgba(108, 40, 55, .72);
+  font-family: var(--hand);
+  font-size: clamp(1.05rem, 4.8vw, 1.45rem);
+  line-height: 1;
+  transform: rotate(3.5deg);
+}
+
+.photo-note span {
+  display: inline-block;
+  margin-right: 3px;
+  font-size: 1.35em;
+  transform: rotate(-8deg) translateY(-2px);
+}
+
 .photo-frame {
   position: relative;
   display: grid;
@@ -205,9 +224,66 @@ button:focus-visible {
   filter: saturate(.78) drop-shadow(0 9px 9px rgba(47, 34, 25, .12));
 }
 
+.secret-ps {
+  min-height: clamp(430px, 92vw, 610px);
+  padding: clamp(190px, 42vw, 285px) 0 clamp(105px, 25vw, 170px);
+  text-align: center;
+}
+
+.ps-trigger {
+  padding: 3px 6px;
+  border: 0;
+  border-bottom: 1px dashed rgba(108, 40, 55, .22);
+  background: transparent;
+  color: rgba(53, 38, 34, .64);
+  cursor: pointer;
+  font-family: var(--hand);
+  font-size: clamp(1rem, 4.5vw, 1.25rem);
+  transform: rotate(-2deg);
+  transition: color .25s ease, border-color .25s ease;
+}
+
+.ps-trigger:hover {
+  border-color: rgba(108, 40, 55, .48);
+  color: var(--wine);
+}
+
+.ps-trigger[aria-disabled="true"] {
+  cursor: default;
+  pointer-events: none;
+}
+
+.ps-message {
+  min-height: 118px;
+  margin-top: 38px;
+}
+
+.ps-line {
+  margin: 0;
+  opacity: 0;
+  color: var(--ink);
+  font-family: var(--hand);
+  font-size: clamp(1.45rem, 6.2vw, 2rem);
+  line-height: 1.15;
+  transform: translateY(9px);
+  transition: opacity .7s var(--ease), transform .8s var(--ease);
+}
+
+.ps-first.is-visible,
+.ps-second.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ps-second {
+  margin-top: 20px;
+  color: var(--wine);
+}
+
 @media (min-width: 700px) {
   .photo-main { width: 88%; }
   .small-photos { width: 82%; }
+  .photo-note { right: -25px; bottom: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

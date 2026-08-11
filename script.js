@@ -46,3 +46,20 @@ document.querySelector("#open-letter").addEventListener("click", () => {
   intro.classList.add("is-open");
   window.setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 80);
 });
+
+const psTrigger = document.querySelector("#ps-trigger");
+const psMessage = document.querySelector("#ps-message");
+const psFirst = document.querySelector(".ps-first");
+const psSecond = document.querySelector(".ps-second");
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+psTrigger.addEventListener("click", () => {
+  psTrigger.setAttribute("aria-expanded", "true");
+  psTrigger.setAttribute("aria-disabled", "true");
+  psMessage.setAttribute("aria-hidden", "false");
+  psFirst.classList.add("is-visible");
+
+  window.setTimeout(() => {
+    psSecond.classList.add("is-visible");
+  }, reducedMotion ? 0 : 1100);
+}, { once: true });
