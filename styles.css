@@ -1,0 +1,218 @@
+:root {
+  --night: #1b1012;
+  --paper: #f1e7d6;
+  --ink: #352622;
+  --wine: #6c2837;
+  --muted: #8d766d;
+  --serif: "Cormorant Garamond", Georgia, serif;
+  --hand: "Caveat", cursive;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--night); }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+  background: var(--night);
+  color: var(--ink);
+  font-family: var(--serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font: inherit; }
+
+button:focus-visible {
+  outline: 2px solid #c69b72;
+  outline-offset: 5px;
+}
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 24px;
+  background: var(--night);
+  color: #eee2d4;
+  text-align: center;
+  transition: opacity .8s var(--ease), visibility .8s;
+}
+
+.intro.is-open {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro p {
+  margin: 0 0 30px;
+  font-size: clamp(1.8rem, 8vw, 2.8rem);
+  font-style: italic;
+}
+
+.intro button {
+  padding: 9px 0 7px;
+  border: 0;
+  border-bottom: 1px solid rgba(238, 226, 212, .45);
+  background: transparent;
+  color: #d7c5b7;
+  cursor: pointer;
+  font-size: 1.05rem;
+}
+
+#letter-view[aria-hidden="true"] {
+  visibility: hidden;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#letter-view[aria-hidden="false"] { visibility: visible; }
+
+#letter-view {
+  min-height: 100svh;
+  padding: clamp(26px, 7vw, 70px) 12px;
+  background:
+    radial-gradient(circle at 50% 0, rgba(108, 40, 55, .22), transparent 38%),
+    var(--night);
+}
+
+.letter {
+  position: relative;
+  width: min(100%, 720px);
+  margin: 0 auto;
+  padding: clamp(22px, 6vw, 55px) clamp(18px, 6vw, 62px) clamp(45px, 9vw, 85px);
+  background-color: var(--paper);
+  background-image: repeating-linear-gradient(3deg, rgba(75, 52, 39, .02) 0 1px, transparent 1px 6px);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, .38);
+  opacity: 0;
+  transform: translateY(35px);
+}
+
+#letter-view.is-open .letter {
+  animation: showLetter 1s .18s var(--ease) forwards;
+}
+
+@keyframes showLetter {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.letter-kicker {
+  margin: 0 0 22px;
+  color: var(--muted);
+  font-size: .7rem;
+  letter-spacing: .16em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.photo {
+  position: relative;
+  margin: 0;
+  padding: 8px;
+  background: #faf5eb;
+  box-shadow: 1px 5px 14px rgba(51, 34, 26, .16);
+}
+
+.photo-main {
+  margin: 0 auto clamp(45px, 9vw, 75px);
+  transform: rotate(-.6deg);
+}
+
+.photo-frame {
+  position: relative;
+  display: grid;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  place-items: center;
+  overflow: hidden;
+  background: #4a3b3b;
+}
+
+.photo-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-placeholder {
+  color: rgba(244, 233, 217, .7);
+  font-family: var(--hand);
+  font-size: clamp(1.35rem, 6vw, 2rem);
+  transform: rotate(-2deg);
+}
+
+.letter-copy {
+  width: min(100%, 565px);
+  margin: 0 auto;
+}
+
+.letter-copy p {
+  margin: 0 0 1.15em;
+  font-family: var(--hand);
+  font-size: clamp(1.55rem, 6.6vw, 2.15rem);
+  line-height: 1.18;
+}
+
+.letter-copy p:first-child {
+  margin-bottom: 1.35em;
+  color: var(--wine);
+  font-size: clamp(2.4rem, 10vw, 3.5rem);
+}
+
+.letter-copy .sign-off {
+  margin-top: 2em;
+  color: var(--wine);
+  text-align: right;
+}
+
+.sign-off span { font-size: .7em; }
+
+.small-photos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 4vw, 28px);
+  margin: clamp(65px, 13vw, 105px) auto 55px;
+}
+
+.small-photos .photo:first-child { transform: rotate(-2deg); }
+.small-photos .photo:last-child { transform: rotate(2deg); }
+.small-photos .photo-frame { aspect-ratio: 4 / 5; }
+
+.flowers {
+  margin: clamp(65px, 13vw, 105px) 0 0;
+  text-align: center;
+}
+
+.flowers p {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-family: var(--hand);
+  font-size: clamp(1.35rem, 5.5vw, 1.8rem);
+}
+
+.bouquet {
+  display: block;
+  width: min(56vw, 230px);
+  height: auto;
+  margin: 0 auto;
+  filter: saturate(.78) drop-shadow(0 9px 9px rgba(47, 34, 25, .12));
+}
+
+@media (min-width: 700px) {
+  .photo-main { width: 88%; }
+  .small-photos { width: 82%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
