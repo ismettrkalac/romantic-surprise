@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="sr-Latn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1b1012">
+  <meta name="description" content="Jedno malo pismo za naša prva tri meseca zajedno.">
+  <meta property="og:title" content="Srećna nam 3 meseca zajedno">
+  <meta property="og:description" content="Jedno malo pismo samo za tebe.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ismettrkalac.github.io/romantic-surprise/">
+  <meta name="twitter:card" content="summary">
+  <title>Srećna nam 3 meseca zajedno</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&amp;family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <section class="intro" id="intro" aria-labelledby="intro-title">
+    <div>
+      <p id="intro-title">za tebe.</p>
+      <button id="open-letter" type="button">otvori pismo</button>
+    </div>
+  </section>
+
+  <main id="letter-view" aria-hidden="true">
+    <article class="letter">
+      <p class="letter-kicker">naša prva tri meseca</p>
+
+      <figure class="photo photo-main" data-photo="0">
+        <div class="photo-frame"></div>
+        <p class="photo-note"><span aria-hidden="true">↖</span> moja omiljena osoba &lt;3</p>
+      </figure>
+
+      <div class="letter-copy">
+        <p>duso mua,</p>
+
+        <p>srecan nam 3 mesec zajeno.</p>
+
+        <p>fala za sve uspomene lepe.</p>
+
+        <p>jedva cekam da se vidjime pa da ideme na sushi date da probam ja azijska hrana, da ideme vo toja retro old school bioskop i jos stvari.</p>
+
+        <p>a najvise jedva cekam da te zagrljim duso i da bideme zajeno.</p>
+
+        <p class="sign-off">samoo tvojj<br>te voljimm <span aria-hidden="true">♥</span></p>
+      </div>
+
+      <div class="small-photos" aria-label="Naše fotografije">
+        <figure class="photo" data-photo="1"><div class="photo-frame"></div></figure>
+        <figure class="photo" data-photo="2"><div class="photo-frame"></div></figure>
+      </div>
+
+      <div class="flowers" aria-label="Evoo cvecee za princess">
+        <p>evoo cvecee za princess</p>
+        <img class="bouquet" src="assets/lilies-white-roses.webp" alt="Beli ljiljani i bele ruže" loading="lazy" decoding="async">
+      </div>
+
+      <section class="secret-ps" id="secret-ps" aria-label="Tajni postskriptum">
+        <button class="ps-trigger" id="ps-trigger" type="button" aria-expanded="false" aria-controls="ps-message">p.s. wife…</button>
+        <div class="ps-message" id="ps-message" aria-hidden="true" aria-live="polite" hidden>
+          <p class="ps-line ps-first">ovo su tek prva 3 meseca.</p>
+          <p class="ps-line ps-second">te voljim mnogo mnogo mnogo duso mua. ❤️</p>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

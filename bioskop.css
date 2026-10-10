@@ -1,0 +1,781 @@
+:root {
+  --night: #14070b;
+  --wine: #8e1b31;
+  --rose: #c23a54;
+  --blush: #f4b6c2;
+  --gold: #e9c27b;
+  --bulb: #ffe6a6;
+  --cream: #f7ecd9;
+  --ink: #3a1f22;
+  --display: "Limelight", "Cormorant Garamond", Georgia, serif;
+  --serif: "Cormorant Garamond", Georgia, serif;
+  --hand: "Caveat", cursive;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--night); }
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(120% 70% at 50% 0, rgba(142, 27, 49, .38), transparent 62%),
+    var(--night);
+  color: var(--cream);
+  font-family: var(--serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+/* ---------- atmosfera ---------- */
+
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 50;
+  pointer-events: none;
+  opacity: .08;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain .9s steps(4) infinite;
+  transition: opacity 1s;
+}
+
+body.is-playing .grain { opacity: .03; }
+
+@keyframes grain {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-3%, 2%); }
+  50%  { transform: translate(2%, -3%); }
+  75%  { transform: translate(-2%, -1%); }
+  100% { transform: translate(1%, 3%); }
+}
+
+.hearts {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 1.2s;
+}
+
+body.is-playing .hearts { opacity: 0; }
+
+.hearts span {
+  position: absolute;
+  bottom: -40px;
+  left: var(--x);
+  color: var(--c);
+  font-size: var(--s);
+  opacity: 0;
+  animation: rise var(--d) var(--delay) linear infinite;
+}
+
+@keyframes rise {
+  0%   { opacity: 0; transform: translate(0, 0) rotate(-10deg); }
+  10%  { opacity: .65; }
+  50%  { transform: translate(var(--sway), -55vh) rotate(8deg); }
+  85%  { opacity: .4; }
+  100% { opacity: 0; transform: translate(0, -115vh) rotate(-6deg); }
+}
+
+/* ---------- etape ---------- */
+
+.stage {
+  opacity: 0;
+  transition: opacity .8s var(--ease);
+}
+
+.stage.is-active { opacity: 1; }
+.stage[hidden] { display: none; }
+
+.stage-ticket,
+.stage-theater {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+}
+
+/* ---------- 1. ulaznica ---------- */
+
+.stage-ticket {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 30px;
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.ticket {
+  --notch: 11px;
+  display: flex;
+  width: min(100%, 440px);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, .5));
+  animation: float 4.5s ease-in-out infinite;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%      { transform: translateY(-9px) rotate(-1deg); }
+}
+
+.ticket-main,
+.ticket-stub {
+  transition: transform 1.1s var(--ease), opacity 1s var(--ease);
+}
+
+.ticket-main {
+  display: grid;
+  flex: 1;
+  gap: 6px;
+  padding: 22px 20px 18px 24px;
+  background:
+    repeating-linear-gradient(-45deg, rgba(142, 27, 49, .025) 0 2px, transparent 2px 7px),
+    var(--cream);
+  box-shadow:
+    inset 0 0 0 7px var(--cream),
+    inset 0 0 0 8px rgba(142, 27, 49, .3);
+  -webkit-mask:
+    radial-gradient(circle at 100% 0, transparent var(--notch), #000 calc(var(--notch) + .5px)) top / 100% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent var(--notch), #000 calc(var(--notch) + .5px)) bottom / 100% 51% no-repeat;
+  mask:
+    radial-gradient(circle at 100% 0, transparent var(--notch), #000 calc(var(--notch) + .5px)) top / 100% 51% no-repeat,
+    radial-gradient(circle at 100% 100%, transparent var(--notch), #000 calc(var(--notch) + .5px)) bottom / 100% 51% no-repeat;
+}
+
+.ticket-top {
+  color: var(--wine);
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+}
+
+.ticket-title {
+  color: var(--wine);
+  font-family: var(--display);
+  font-size: clamp(2.3rem, 11vw, 3.3rem);
+  line-height: 1.05;
+}
+
+.ticket-for {
+  font-family: var(--hand);
+  font-size: clamp(1.45rem, 6vw, 1.8rem);
+  line-height: 1;
+}
+
+.ticket-for span {
+  color: rgba(58, 31, 34, .6);
+  font-size: .8em;
+}
+
+.ticket-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 6px;
+  padding-top: 9px;
+  border-top: 1px dashed rgba(142, 27, 49, .35);
+  color: rgba(58, 31, 34, .72);
+  font-size: .74rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.ticket-stub {
+  display: flex;
+  flex: 0 0 74px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border-left: 2px dashed rgba(247, 236, 217, .55);
+  background:
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, .04) 0 2px, transparent 2px 7px),
+    var(--wine);
+  color: var(--cream);
+  font-size: .72rem;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  -webkit-mask:
+    radial-gradient(circle at 0 0, transparent var(--notch), #000 calc(var(--notch) + .5px)) top / 100% 51% no-repeat,
+    radial-gradient(circle at 0 100%, transparent var(--notch), #000 calc(var(--notch) + .5px)) bottom / 100% 51% no-repeat;
+  mask:
+    radial-gradient(circle at 0 0, transparent var(--notch), #000 calc(var(--notch) + .5px)) top / 100% 51% no-repeat,
+    radial-gradient(circle at 0 100%, transparent var(--notch), #000 calc(var(--notch) + .5px)) bottom / 100% 51% no-repeat;
+}
+
+.stub-no {
+  color: var(--bulb);
+  font-family: var(--display);
+  font-size: 1.05rem;
+  letter-spacing: .08em;
+}
+
+.ticket-tear {
+  margin: 0;
+  color: rgba(247, 236, 217, .62);
+  font-family: var(--hand);
+  font-size: 1.3rem;
+  animation: breathe 2.4s ease-in-out infinite;
+  transition: opacity .6s;
+}
+
+@keyframes breathe {
+  50% { opacity: .45; }
+}
+
+.stage-ticket.is-torn .ticket { animation: none; cursor: default; }
+.stage-ticket.is-torn .ticket-tear { opacity: 0; animation: none; }
+
+.stage-ticket.is-torn .ticket-main {
+  transform: translate(-6px, -10px) rotate(-4deg);
+}
+
+.stage-ticket.is-torn .ticket-stub {
+  opacity: 0;
+  transform: translate(40px, 65vh) rotate(32deg);
+  transition-timing-function: cubic-bezier(.55, 0, .8, .3);
+}
+
+/* ---------- 2. sala ---------- */
+
+.stage-theater {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: max(14px, env(safe-area-inset-top));
+}
+
+.stage-area {
+  position: relative;
+  display: grid;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  place-items: center;
+  padding: 40px 16px 18px;
+  overflow: hidden;
+  container-type: size;
+}
+
+.screen-wrap {
+  --title-space: 64px;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 100%;
+  justify-items: center;
+  gap: 12px;
+}
+
+.film-title {
+  margin: 0;
+  color: var(--blush);
+  font-family: var(--hand);
+  font-size: clamp(1.7rem, 7.5vw, 2.5rem);
+  line-height: 1.1;
+  text-align: center;
+  text-shadow: 0 0 18px rgba(194, 58, 84, .6);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 1.2s var(--ease) .4s, transform 1.2s var(--ease) .4s;
+}
+
+body.is-playing .film-title {
+  opacity: 1;
+  transform: none;
+}
+
+.screen {
+  --r: 1.7778;
+  position: relative;
+  z-index: 1;
+  width: min(100%, calc((100cqh - var(--title-space)) * var(--r)));
+  aspect-ratio: var(--r);
+  overflow: hidden;
+  border-radius: 6px;
+  background: radial-gradient(circle at 50% 45%, #3a1820, #0b0406 75%);
+  box-shadow:
+    0 0 0 5px #1d0a0f,
+    0 0 0 7px rgba(233, 194, 123, .25),
+    0 30px 80px rgba(0, 0, 0, .6);
+  container-type: inline-size;
+  transition: box-shadow 1.2s;
+}
+
+body.is-playing .screen {
+  box-shadow:
+    0 0 0 5px #1d0a0f,
+    0 0 0 7px rgba(233, 194, 123, .3),
+    0 0 90px rgba(255, 236, 210, .2);
+}
+
+.screen video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  opacity: 0;
+  transition: opacity .6s;
+}
+
+body.is-playing .screen video { opacity: 1; }
+
+.screen-card,
+.screen-missing {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  margin: 0;
+  place-content: center;
+  color: var(--blush);
+  font-family: var(--hand);
+  font-size: clamp(1.4rem, 7cqw, 2.4rem);
+  text-align: center;
+  transition: opacity .5s;
+}
+
+.screen-card.is-gone { opacity: 0; }
+.screen-missing[hidden] { display: none; }
+
+.screen-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  min-height: 48px;
+  padding: 10px 24px;
+  border: 1px solid rgba(233, 194, 123, .6);
+  border-radius: 999px;
+  background: rgba(20, 7, 11, .75);
+  color: var(--bulb);
+  cursor: pointer;
+  font-family: var(--hand);
+  font-size: 1.5rem;
+  transform: translate(-50%, -50%);
+}
+
+.screen-play[hidden] { display: none; }
+
+/* stari filmski odbrojavač */
+
+@property --sweep {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.countdown {
+  --size: calc(100cqw * min(.62, .74 / var(--r)));
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(transparent calc(50% - 1px), rgba(43, 26, 18, .45) 0 calc(50% + 1px), transparent 0),
+    linear-gradient(90deg, transparent calc(50% - 1px), rgba(43, 26, 18, .45) 0 calc(50% + 1px), transparent 0),
+    radial-gradient(circle, #ecdab6, #ad9168 72%, #6e5638);
+  color: #2b1a12;
+}
+
+.countdown[hidden] { display: none; }
+
+.countdown::before {
+  content: "";
+  position: absolute;
+  width: var(--size);
+  aspect-ratio: 1;
+  border: 3px solid rgba(43, 26, 18, .7);
+  border-radius: 50%;
+  outline: 2px solid rgba(43, 26, 18, .45);
+  outline-offset: calc(var(--size) * .06);
+  background: conic-gradient(rgba(43, 26, 18, .26) var(--sweep), transparent 0);
+}
+
+.countdown.tick::before { animation: sweep 1s linear forwards; }
+
+@keyframes sweep {
+  to { --sweep: 360deg; }
+}
+
+.countdown span {
+  position: relative;
+  font-family: var(--display);
+  font-size: calc(var(--size) * .55);
+  line-height: 1;
+}
+
+/* zavese */
+
+.curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 4;
+  width: 51%;
+  background:
+    linear-gradient(rgba(0, 0, 0, .3), transparent 25%, transparent 70%, rgba(0, 0, 0, .45)),
+    repeating-linear-gradient(90deg, #4f0a1a 0, #8e1b31 22px, #c23a54 31px, #8e1b31 42px, #4f0a1a 58px);
+  transition: transform 2.3s cubic-bezier(.65, 0, .25, 1);
+  will-change: transform;
+}
+
+.curtain::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 16px;
+  background: repeating-linear-gradient(90deg, var(--gold) 0 2px, #9a7438 2px 4px);
+  -webkit-mask: linear-gradient(#000 30%, transparent);
+  mask: linear-gradient(#000 30%, transparent);
+}
+
+.curtain-left {
+  left: 0;
+  box-shadow: 10px 0 24px rgba(0, 0, 0, .45);
+}
+
+.curtain-right {
+  right: 0;
+  box-shadow: -10px 0 24px rgba(0, 0, 0, .45);
+}
+
+.stage-theater.is-open .curtain-left { transform: translateX(-90%); }
+.stage-theater.is-open .curtain-right { transform: translateX(90%); }
+
+.valance {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 5;
+  height: 36px;
+  background:
+    linear-gradient(transparent 13px, var(--gold) 13px 15px, transparent 15px) top / 100% 16px no-repeat,
+    linear-gradient(#5c0d1f, #8e1b31) top / 100% 16px no-repeat,
+    radial-gradient(circle at 50% 0, #8e1b31 0 19px, transparent 20px) 0 16px / 40px 20px repeat-x;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .5));
+}
+
+/* svetlo projektora */
+
+.beam {
+  position: absolute;
+  inset: 20% 0 -10%;
+  z-index: 0;
+  background: linear-gradient(to top, rgba(255, 240, 215, .2), rgba(255, 240, 215, .02));
+  clip-path: polygon(50% 100%, 6% 0, 94% 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.6s;
+}
+
+body.is-playing .beam {
+  opacity: 1;
+  animation: flicker 3s linear infinite;
+}
+
+@keyframes flicker {
+  0%, 100% { filter: brightness(1); }
+  40% { filter: brightness(.8); }
+  42% { filter: brightness(1.15); }
+  70% { filter: brightness(.9); }
+}
+
+/* sedišta */
+
+.seats {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px max(10px, env(safe-area-inset-bottom));
+}
+
+.seat {
+  display: grid;
+  flex: 0 1 62px;
+  height: 42px;
+  place-items: center;
+  border-radius: 22px 22px 6px 6px;
+  background: linear-gradient(#4a1220, #24070e);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, .06);
+}
+
+.seat.us {
+  height: 50px;
+  background: linear-gradient(#6b1a2c, #2d0911);
+}
+
+.seat.us span {
+  color: var(--gold);
+  font-family: var(--hand);
+  font-size: 1.2rem;
+}
+
+.seat-heart {
+  align-self: center;
+  margin-bottom: 14px;
+  color: var(--rose);
+  font-size: 1.15rem;
+  animation: beat 1.4s ease-in-out infinite;
+}
+
+@keyframes beat {
+  0%, 60%, 100% { transform: scale(1); }
+  15% { transform: scale(1.25); }
+  30% { transform: scale(1.05); }
+  45% { transform: scale(1.2); }
+}
+
+/* ---------- 3. odjavna špica ---------- */
+
+.stage-credits {
+  position: relative;
+  z-index: 2;
+  padding: max(64px, env(safe-area-inset-top)) 16px max(110px, env(safe-area-inset-bottom));
+  text-align: center;
+}
+
+.credits-roll {
+  width: min(100%, 560px);
+  margin: 0 auto;
+}
+
+.credits-end {
+  margin: 6vh 0 4px;
+  color: var(--bulb);
+  font-family: var(--display);
+  font-size: clamp(3.2rem, 17vw, 5.2rem);
+  line-height: 1;
+  text-shadow:
+    0 0 12px rgba(255, 214, 140, .5),
+    0 0 36px rgba(194, 58, 84, .5);
+}
+
+.credits-big {
+  margin: 0 0 72px;
+  color: var(--blush);
+  font-family: var(--hand);
+  font-size: clamp(1.7rem, 7.5vw, 2.4rem);
+}
+
+.credits-list { margin: 0; }
+
+.credits-list div { margin: 0 0 34px; }
+
+.credits-list dt,
+.credits-label {
+  margin: 0 0 6px;
+  color: var(--gold);
+  font-size: .72rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+}
+
+.credits-list dd {
+  margin: 0;
+  font-size: clamp(1.35rem, 5.6vw, 1.7rem);
+  font-style: italic;
+  line-height: 1.25;
+}
+
+.credits-list small {
+  color: var(--blush);
+  font-family: var(--hand);
+  font-size: .9em;
+  font-style: normal;
+}
+
+.credits-label { margin-top: 76px; }
+
+.stills {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 18px 0 0;
+}
+
+.still {
+  flex: 1 1 0;
+  max-width: 170px;
+  margin: 0;
+  padding: 6px 6px 0;
+  background: var(--cream);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, .45);
+}
+
+.still:nth-child(1) { transform: rotate(-4deg); }
+.still:nth-child(2) { transform: translateY(-10px) rotate(1.5deg); }
+.still:nth-child(3) { transform: rotate(4deg); }
+
+.still img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  background: #4a3b3b;
+}
+
+.still figcaption {
+  padding: 4px 0 6px;
+  color: var(--ink);
+  font-family: var(--hand);
+  font-size: clamp(1rem, 4.4vw, 1.3rem);
+}
+
+.sequel {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--hand);
+  font-size: clamp(1.5rem, 6.4vw, 1.95rem);
+  line-height: 1.5;
+}
+
+.credits-love {
+  margin: 86px 0 0;
+  color: var(--rose);
+  font-family: var(--hand);
+  font-size: clamp(2.3rem, 10vw, 3.2rem);
+  text-shadow: 0 0 26px rgba(194, 58, 84, .45);
+}
+
+.credits-love span {
+  display: inline-block;
+  animation: beat 1.4s ease-in-out infinite;
+}
+
+.credits-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 54px;
+}
+
+.pill {
+  display: inline-grid;
+  min-height: 46px;
+  padding: 10px 24px;
+  place-items: center;
+  border: 1px solid rgba(233, 194, 123, .55);
+  border-radius: 999px;
+  background: rgba(142, 27, 49, .3);
+  color: var(--cream);
+  cursor: pointer;
+  font-size: 1.15rem;
+  text-decoration: none;
+  transition: background .25s, border-color .25s;
+}
+
+.pill:hover { background: rgba(142, 27, 49, .55); }
+
+.pill-quiet {
+  border-color: rgba(247, 236, 217, .2);
+  background: transparent;
+  color: rgba(247, 236, 217, .78);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 1s var(--ease), transform 1.1s var(--ease);
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* gramofonska ploča za pesmu */
+
+.vinyl {
+  position: fixed;
+  right: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 20;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--bulb) 0 2px, var(--rose) 2.5px 9px, transparent 9.5px),
+    repeating-radial-gradient(circle, #1a1a1a 0 2px, #262626 2px 3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .5), 0 0 0 1px rgba(233, 194, 123, .3);
+  cursor: pointer;
+  animation: spin 3.2s linear infinite paused;
+}
+
+.vinyl[hidden] { display: none; }
+.vinyl[aria-pressed="true"] { animation-play-state: running; }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 420px) {
+  .seat { height: 34px; }
+  .seat.us { height: 42px; }
+  .seats { gap: 6px; }
+}
+
+@media (max-height: 560px) {
+  .stage-area { padding: 24px 16px 10px; }
+  .seats { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* savet da okrene telefon */
+
+.rotate-hint {
+  position: absolute;
+  right: 0;
+  bottom: 22px;
+  left: 0;
+  z-index: 2;
+  display: none;
+  margin: 0;
+  color: rgba(247, 236, 217, .55);
+  font-family: var(--hand);
+  font-size: 1.2rem;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 1s 1.5s;
+}
+
+@media (orientation: portrait) and (max-width: 700px) {
+  .rotate-hint { display: block; }
+  body.is-playing .rotate-hint { opacity: 1; }
+}
