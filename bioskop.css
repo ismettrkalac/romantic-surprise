@@ -650,6 +650,31 @@ body.is-playing .beam {
   animation: sway 6s ease-in-out infinite;
 }
 
+.flowers-note {
+  margin: 14px 0 0;
+  color: var(--blush);
+  font-family: var(--hand);
+  font-size: clamp(1.7rem, 7.5vw, 2.3rem);
+  text-shadow: 0 0 18px rgba(194, 58, 84, .45);
+}
+
+.aesthetic-heart {
+  display: inline-block;
+  margin-left: .1em;
+  color: var(--rose);
+  font-family: "Noto Sans Tai Le", "Noto Sans Balinese", sans-serif;
+  font-size: .9em;
+  text-shadow: 0 0 12px rgba(194, 58, 84, .7);
+  opacity: 0;
+  transform: scale(.6);
+  transition: opacity .8s var(--ease) .8s, transform .9s cubic-bezier(.34, 1.56, .64, 1) .8s;
+}
+
+.flowers.is-in .aesthetic-heart {
+  opacity: 1;
+  transform: none;
+}
+
 @keyframes sway {
   0%, 100% { transform: rotate(-1.5deg); }
   50%      { transform: rotate(1.5deg); }
