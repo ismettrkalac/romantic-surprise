@@ -343,9 +343,9 @@ const CONFIG = {
     introA: "Hej, duša mua…",
     introB: "Imam nešto za tebe.",
     sky: "Svaka zvezda na ovom nebu je jedan trenutak sa tobom.",
-    find: "Pronađi sedam najsjajnijih.",
+    find: "Pronađi osam najsjajnijih.",
     counter: (seen, total) => `${seen} od ${total} uspomena`,
-    count: "Šest meseci. Sedam malih zvezda.",
+    count: "Šest meseci. Osam malih zvezda.",
     leads: "…i svaka od njih vodi do tebe.",
   },
 
@@ -353,6 +353,8 @@ const CONFIG = {
   memories: [
     { photo: "photos/3.jpg", label: "Sunčana popodneva",
       text: "Kafa, sunce i ti pored mene. Sećam se da mi je prošlo kroz glavu: ovo je tačno mesto gde želim da budem." },
+    { photo: "photos/1.jpg", label: "Poljubac za kameru",
+      text: "Ti šalješ poljubac kameri, a ja znam da je zapravo bio za mene." },
     { photo: "photos/2.jpg", label: "Taj osmeh",
       text: "Tvoj osmeh je moj omiljeni pogled u celom gradu." },
     { photo: "photos/4.jpg", label: "Ozbiljno fotografisanje",
@@ -474,20 +476,34 @@ function heartPoint(t) {
   return { x: 50 + x * 2.6, y: 50 - (y + 2.5) * 2.6 }; // map into a 0–100 box
 }
 
+const heartPts = [];
+for (let i = 0; i <= 240; i++) heartPts.push(heartPoint((i / 240) * Math.PI * 2));
 (function buildHeart() {
-  const pts = [];
-  for (let i = 0; i <= 240; i++) pts.push(heartPoint((i / 240) * Math.PI * 2));
-  const d = "M" + pts.map((p) => `${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" L") + " Z";
+  const d = "M" + heartPts.map((p) => `${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" L") + " Z";
   $("#heartPath").setAttribute("d", d);
   $("#heartFill").setAttribute("d", d);
 })();
+
+// Point at fraction f (0–1) of the way around the heart, measured by distance along the
+// outline. Even spacing by angle bunches stars at the top dip and bottom tip.
+const heartLens = [0];
+for (let i = 1; i < heartPts.length; i++) {
+  heartLens.push(heartLens[i - 1] + Math.hypot(heartPts[i].x - heartPts[i - 1].x, heartPts[i].y - heartPts[i - 1].y));
+}
+function heartAt(f) {
+  const target = f * heartLens[heartLens.length - 1];
+  let i = heartLens.findIndex((l) => l >= target);
+  if (i <= 0) return heartPts[0];
+  const k = (target - heartLens[i - 1]) / (heartLens[i] - heartLens[i - 1]);
+  return { x: heartPts[i - 1].x + (heartPts[i].x - heartPts[i - 1].x) * k, y: heartPts[i - 1].y + (heartPts[i].y - heartPts[i - 1].y) * k };
+}
 
 const box = $("#heartBox");
 const N = CONFIG.memories.length;
 const seen = new Set();
 
 CONFIG.memories.forEach((m, i) => {
-  const p = heartPoint(((i + 0.5) / N) * Math.PI * 2);
+  const p = heartAt((i + 0.5) / N);
   const b = document.createElement("button");
   b.className = "mstar";
   b.style.left = p.x + "%";
