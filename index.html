@@ -1,126 +1,663 @@
 <!doctype html>
-<html lang="sr-Latn">
+<html lang="sr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#14070b">
-  <meta name="description" content="Jedna projekcija, samo za tebe.">
-  <meta property="og:title" content="Bioskop za dvoje">
-  <meta property="og:description" content="Jedna ulaznica. Jedna projekcija. Samo za tebe.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://ismettrkalac.github.io/romantic-surprise/">
-  <meta name="twitter:card" content="summary">
-  <title>Bioskop za dvoje</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&amp;family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&amp;family=Limelight&amp;display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Balinese&amp;family=Noto+Sans+Tai+Le&amp;text=%E1%A5%AB%E1%AD%A1&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="bioskop.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05061a">
+<title>Our Sky</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night-1: #05061a;
+    --night-2: #0d1033;
+    --night-3: #241a52;
+    --star: #fff8e7;
+    --rose: #ff8fb1;
+    --rose-soft: #ffc7d9;
+    --gold: #ffd98a;
+    --ink: #f4ecff;
+    --muted: #b9b0d6;
+    --paper: #fbf4ea;
+    --paper-ink: #3b2840;
+    --serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --script: "Great Vibes", "Snell Roundhand", "Apple Chancery", cursive;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    color: var(--ink);
+    font-family: var(--serif);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    background: radial-gradient(ellipse at 50% 115%, var(--night-3) 0%, var(--night-2) 42%, var(--night-1) 100%);
+  }
+  #sky { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+
+  /* ---------- screens ---------- */
+  .screen {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 18px;
+    padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+    text-align: center;
+    opacity: 0; visibility: hidden;
+    transition: opacity 1.6s ease, visibility 0s linear 1.6s;
+  }
+  .screen.active { opacity: 1; visibility: visible; transition: opacity 1.6s ease, visibility 0s; }
+
+  .line {
+    font-size: clamp(1.5rem, 5.2vw, 2.4rem);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: .01em;
+    line-height: 1.35;
+    min-height: 1.35em;
+    max-width: 22ch;
+    text-shadow: 0 0 18px rgba(255, 200, 230, .25);
+  }
+  .script { font-family: var(--script); font-style: normal; font-weight: 400; }
+  .typing::after {
+    content: "";
+    display: inline-block; width: 1px; height: .9em;
+    margin-left: 3px; vertical-align: -0.08em;
+    background: currentColor;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hint {
+    font-size: .95rem; letter-spacing: .3em; text-transform: lowercase;
+    color: var(--muted);
+    opacity: 0; transition: opacity 1.4s ease;
+  }
+  .hint.show { opacity: .85; animation: breathe 2.8s ease-in-out infinite; }
+  @keyframes breathe { 50% { opacity: .35; } }
+
+  /* ---------- constellation ---------- */
+  #skyScreen { justify-content: space-between; }
+  .caption {
+    font-size: clamp(1.2rem, 4.4vw, 1.75rem);
+    font-style: italic;
+    line-height: 1.35;
+    min-height: 2.7em;
+    max-width: 26ch;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2vh;
+  }
+  #heartBox {
+    position: relative;
+    width: min(88vw, 60vh, 560px);
+    aspect-ratio: 1;
+    flex-shrink: 0;
+  }
+  #heartSvg {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 0 3px var(--rose)) drop-shadow(0 0 10px rgba(255, 143, 177, .6));
+    pointer-events: none;
+  }
+  #heartPath { fill: none; stroke: var(--rose-soft); stroke-width: .55; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+  #heartPath.draw { opacity: 1; transition: stroke-dashoffset 5s cubic-bezier(.45, .05, .35, 1); }
+  #heartFill { fill: rgba(255, 143, 177, 0); transition: fill 3s ease 4.5s; }
+  #heartFill.on { fill: rgba(255, 143, 177, .08); }
+
+  .mstar {
+    position: absolute;
+    width: 48px; height: 48px;
+    transform: translate(-50%, -50%) scale(.2);
+    border: 0; background: none; cursor: pointer;
+    opacity: 0;
+    transition: opacity 1.2s ease, transform 1.2s cubic-bezier(.2, 1.4, .4, 1);
+  }
+  .mstar.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .mstar::before, .mstar::after {
+    content: ""; position: absolute; left: 50%; top: 50%; border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .mstar::before { /* halo */
+    width: 30px; height: 30px;
+    background: radial-gradient(circle, rgba(255, 248, 231, .55) 0%, rgba(255, 248, 231, 0) 70%);
+    animation: pulse 2.6s ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+  }
+  .mstar::after { /* core */
+    width: 7px; height: 7px;
+    background: var(--star);
+    box-shadow: 0 0 6px 2px rgba(255, 248, 231, .9), 0 0 18px 4px rgba(255, 217, 138, .45);
+  }
+  .mstar.seen::before { background: radial-gradient(circle, rgba(255, 143, 177, .6) 0%, rgba(255, 143, 177, 0) 70%); }
+  .mstar.seen::after { background: var(--rose-soft); box-shadow: 0 0 6px 2px rgba(255, 143, 177, .9), 0 0 18px 4px rgba(255, 143, 177, .5); }
+  .mstar:focus-visible { outline: 1px dashed var(--muted); outline-offset: 2px; border-radius: 50%; }
+  @keyframes pulse { 0%, 100% { transform: translate(-50%, -50%) scale(.75); opacity: .7; } 50% { transform: translate(-50%, -50%) scale(1.35); opacity: 1; } }
+
+  .counter {
+    font-size: .95rem; letter-spacing: .25em; color: var(--muted);
+    margin-bottom: 3vh; min-height: 1.4em;
+    transition: opacity 1s ease;
+  }
+
+  .btn {
+    font: inherit; font-size: 1.15rem; font-style: italic;
+    color: var(--ink);
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 199, 217, .45);
+    border-radius: 999px;
+    padding: 12px 26px;
+    cursor: pointer;
+    box-shadow: 0 0 24px rgba(255, 143, 177, .18);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    transition: background .3s ease, transform .3s ease, opacity 1.2s ease;
+  }
+  .btn:hover { background: rgba(255, 143, 177, .16); transform: translateY(-1px); }
+  .btn.hidden { opacity: 0; pointer-events: none; }
+
+  /* ---------- memory modal ---------- */
+  .modal {
+    position: fixed; inset: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+    background: rgba(5, 6, 26, .55);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    opacity: 0; visibility: hidden;
+    transition: opacity .6s ease, visibility 0s linear .6s;
+  }
+  .modal.open { opacity: 1; visibility: visible; transition: opacity .6s ease, visibility 0s; }
+  .card {
+    width: min(100%, 380px);
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    text-align: center;
+    transform: translateY(18px) scale(.97);
+    transition: transform .7s cubic-bezier(.2, 1, .3, 1);
+  }
+  .modal.open .card { transform: none; }
+  .polaroid {
+    position: relative;
+    background: #fffdf8;
+    padding: 12px 12px 14px;
+    border-radius: 3px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .55), 0 0 40px rgba(255, 143, 177, .15);
+    transform: rotate(-2deg);
+    margin: 6px auto 0;
+    /* keep photo + caption on one screen: the 4:5 photo's height is capped by the viewport */
+    width: min(100%, calc((100dvh - 270px) * 0.8 + 24px));
+    min-width: 200px;
+  }
+  .polaroid .frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    background: linear-gradient(160deg, #2b2050, #5d3a6b 55%, #c47a95);
+    overflow: hidden;
+  }
+  .polaroid img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .polaroid .label {
+    font-family: var(--script);
+    color: var(--paper-ink);
+    font-size: 1.75rem;
+    line-height: 1.1;
+    padding-top: 10px;
+  }
+  .memText {
+    font-size: 1.22rem;
+    line-height: 1.5;
+    margin: 18px 6px 10px;
+    color: var(--ink);
+    text-shadow: 0 1px 12px rgba(5, 6, 26, .8);
+  }
+  .close {
+    font: inherit; font-size: .95rem; letter-spacing: .25em;
+    color: var(--muted); background: none; border: 0; cursor: pointer;
+    padding: 10px 18px;
+  }
+
+  /* ---------- letter ---------- */
+  #letterScreen { gap: 22px; }
+  .paper {
+    width: min(100%, 560px);
+    max-height: min(74vh, 74dvh);
+    overflow-y: auto;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(255, 255, 255, .7), transparent 60%),
+      var(--paper);
+    color: var(--paper-ink);
+    border-radius: 4px;
+    padding: clamp(24px, 6vw, 44px) clamp(20px, 6vw, 46px);
+    text-align: left;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .55), 0 0 60px rgba(255, 143, 177, .12);
+    transform: translateY(16px);
+    transition: transform 1.6s ease;
+    scroll-behavior: smooth;
+  }
+  #letterScreen.active .paper { transform: none; }
+  .paper p { font-size: clamp(1.12rem, 3.9vw, 1.3rem); line-height: 1.6; margin-bottom: 1em; min-height: 1em; }
+  .paper .greet { font-family: var(--script); font-size: clamp(2rem, 7vw, 2.6rem); line-height: 1.2; margin-bottom: .5em; }
+  .paper .sign { font-family: var(--script); font-size: clamp(1.7rem, 6vw, 2.2rem); text-align: right; margin: .6em 0 0; }
+
+  /* ---------- final ---------- */
+  #finalScreen h1 {
+    font-family: var(--script);
+    font-weight: 400;
+    font-size: clamp(3rem, 13vw, 5.5rem);
+    line-height: 1.1;
+    color: var(--rose-soft);
+    text-shadow: 0 0 30px rgba(255, 143, 177, .55);
+  }
+  #finalScreen .surprise { font-size: clamp(1.25rem, 4.6vw, 1.7rem); font-style: italic; line-height: 1.45; max-width: 26ch; }
+  #finalScreen .small { font-family: var(--script); font-size: clamp(1.8rem, 6vw, 2.4rem); color: var(--gold); margin-top: 8px; }
+  #finalScreen .fade { opacity: 0; transform: translateY(10px); transition: opacity 1.8s ease, transform 1.8s ease; }
+  #finalScreen .fade.in { opacity: 1; transform: none; }
+
+  .floating-heart {
+    position: fixed; bottom: -40px; z-index: 1; pointer-events: none;
+    color: var(--rose);
+    animation: floatUp linear forwards;
+    text-shadow: 0 0 12px rgba(255, 143, 177, .7);
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) translateX(0) rotate(0); opacity: 0; }
+    10% { opacity: .9; }
+    100% { transform: translateY(-115vh) translateX(var(--drift)) rotate(var(--rot)); opacity: 0; }
+  }
+
+  #muteBtn {
+    position: fixed; top: max(14px, env(safe-area-inset-top)); right: 14px; z-index: 20;
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, .18); background: rgba(255, 255, 255, .06);
+    color: var(--muted); font-size: 1rem; cursor: pointer;
+    opacity: 0; pointer-events: none; transition: opacity 1s ease;
+  }
+  #muteBtn.show { opacity: .8; pointer-events: auto; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mstar::before, .hint.show { animation: none; }
+    .floating-heart { display: none; }
+  }
+</style>
 </head>
 <body>
-  <div class="grain" aria-hidden="true"></div>
-  <div class="hearts" aria-hidden="true"></div>
+<canvas id="sky" aria-hidden="true"></canvas>
+<audio id="music" src="music.mp3" loop preload="auto"></audio>
+<button id="muteBtn" aria-label="Isključi muziku">♪</button>
 
-  <!-- 1. ulaznica -->
-  <section class="stage stage-ticket is-active" id="ticket-stage" aria-labelledby="ticket-title">
-    <button class="ticket" id="ticket" type="button" aria-describedby="ticket-tear">
-      <span class="ticket-main">
-        <span class="ticket-top">bioskop za dvoje</span>
-        <span class="ticket-title" id="ticket-title">Naš film</span>
-        <span class="ticket-for"><span>za</span> mua duša</span>
-        <span class="ticket-meta">
-          <span>red 1</span>
-          <span>sedište ♥&#xFE0E;</span>
-          <span>samo jedna projekcija</span>
-        </span>
-      </span>
-      <span class="ticket-stub" aria-hidden="true">
-        <span>admit one</span>
-        <span class="stub-no">№ 001</span>
-      </span>
-    </button>
+<!-- 1. intro -->
+<section id="intro" class="screen active" aria-live="polite">
+  <p class="line" id="introA"></p>
+  <p class="line" id="introB"></p>
+  <p class="hint" id="introHint">dodirni bilo gde</p>
+</section>
 
-    <p class="ticket-tear" id="ticket-tear">dodirni kartu da je otkineš ✂&#xFE0E;</p>
-  </section>
+<!-- 2. the sky -->
+<section id="skyScreen" class="screen">
+  <p class="caption" id="caption" aria-live="polite"></p>
+  <div id="heartBox">
+    <svg id="heartSvg" viewBox="0 0 100 100" aria-hidden="true">
+      <path id="heartFill"/>
+      <path id="heartPath"/>
+    </svg>
+  </div>
+  <div class="counter" id="counter"></div>
+  <button class="btn hidden" id="toLetter" style="position:absolute;bottom:max(7vh,env(safe-area-inset-bottom))">Čeka te jedno pismo ♡</button>
+</section>
 
-  <!-- 2. sala -->
-  <section class="stage stage-theater" id="theater" aria-label="Bioskopska sala" hidden>
-    <div class="stage-area">
-      <div class="beam" aria-hidden="true"></div>
+<!-- 3. the letter -->
+<section id="letterScreen" class="screen">
+  <div class="paper" id="paper"></div>
+  <button class="btn hidden" id="moreBtn">Još jedno iznenađenje…</button>
+</section>
 
-      <div class="screen-wrap">
-        <p class="film-title">srećna 5ta mesečnica <span aria-hidden="true">♥&#xFE0E;</span></p>
+<!-- 4. finale -->
+<section id="finalScreen" class="screen">
+  <h1 class="fade" id="finalTitle"></h1>
+  <p class="surprise fade" id="finalText"></p>
+  <p class="small fade" id="finalSmall"></p>
+</section>
 
-        <div class="screen" id="screen">
-          <video id="film" src="assets/our-video.mp4" poster="assets/our-video-poster.jpg" playsinline preload="metadata"></video>
-          <p class="screen-card" id="screen-card">te voljim <span aria-hidden="true">♥&#xFE0E;</span></p>
-          <div class="countdown" id="countdown" aria-hidden="true" hidden><span id="count">3</span></div>
-          <p class="screen-missing" id="screen-missing" hidden>film stiže uskoro… <span aria-hidden="true">♥&#xFE0E;</span></p>
-          <button class="screen-play" id="screen-play" type="button" hidden>▶&#xFE0E; pusti film</button>
-        </div>
-      </div>
-
-      <p class="rotate-hint" aria-hidden="true">okreni telefon za veći ekran ↻</p>
-
-      <div class="curtain curtain-left" aria-hidden="true"></div>
-      <div class="curtain curtain-right" aria-hidden="true"></div>
-      <div class="valance" aria-hidden="true"></div>
+<!-- memory card -->
+<div class="modal" id="memory" role="dialog" aria-modal="true" aria-labelledby="memLabel">
+  <div class="card">
+    <div class="polaroid">
+      <div class="frame"><img id="memImg" alt=""></div>
+      <div class="label" id="memLabel"></div>
     </div>
+    <p class="memText" id="memText"></p>
+    <button class="close" id="memClose">zatvori ✕</button>
+  </div>
+</div>
 
-    <div class="seats" aria-hidden="true">
-      <span class="seat"></span>
-      <span class="seat"></span>
-      <span class="seat us"><span>ti</span></span>
-      <span class="seat-heart">♥&#xFE0E;</span>
-      <span class="seat us"><span>ja</span></span>
-      <span class="seat"></span>
-      <span class="seat"></span>
-    </div>
-  </section>
+<script>
+/* =====================================================================
+   EVERYTHING PERSONAL LIVES HERE — edit the words, keep the quotes.
+   ===================================================================== */
+const CONFIG = {
+  name: "Emina",
+  nickname: "duša mua",
 
-  <!-- 3. odjavna špica -->
-  <section class="stage stage-credits" id="credits" aria-labelledby="credits-title" hidden>
-    <div class="credits-roll">
-      <p class="credits-end reveal" id="credits-title">kraj?</p>
-      <p class="credits-big reveal">ne. ovo je tek početak.</p>
+  // Every line the sky says, in order
+  lines: {
+    introA: "Hej, duša mua…",
+    introB: "Imam nešto za tebe.",
+    sky: "Svaka zvezda na ovom nebu je jedan trenutak sa tobom.",
+    find: "Pronađi sedam najsjajnijih.",
+    counter: (seen, total) => `${seen} od ${total} uspomena`,
+    count: "Šest meseci. Sedam malih zvezda.",
+    leads: "…i svaka od njih vodi do tebe.",
+  },
 
-      <dl class="credits-list">
-        <div class="reveal">
-          <dt>u glavnim ulogama</dt>
-          <dd>ti <small>(najlepša)</small> &amp; ja <small>(najsrećniji)</small></dd>
-        </div>
-        <div class="reveal">
-          <dt>muzika</dt>
-          <dd>ti i ja &lt;3</dd>
-        </div>
-        <div class="reveal">
-          <dt>posebna zahvalnost</dt>
-          <dd>tebi, za sve lepe uspomene</dd>
-        </div>
-      </dl>
+  // Each memory becomes one star on the heart, in this order (clockwise from the top).
+  memories: [
+    { photo: "photos/3.jpg", label: "Sunčana popodneva",
+      text: "Kafa, sunce i ti pored mene. Sećam se da mi je prošlo kroz glavu: ovo je tačno mesto gde želim da budem." },
+    { photo: "photos/2.jpg", label: "Taj osmeh",
+      text: "Tvoj osmeh je moj omiljeni pogled u celom gradu." },
+    { photo: "photos/4.jpg", label: "Ozbiljno fotografisanje",
+      text: "Deset od deset za poljupčiće. Bez zamerki. Pravi profesionalci." },
+    { photo: "photos/5.jpg", label: "Naše srce",
+      text: "Dve ruke, jedno srce. To otprilike kaže sve o nama." },
+    { photo: "photos/6.jpg", label: "Naše večeri",
+      text: "Prigušeno svetlo, hladno piće i tvoja glava na mom ramenu. Te jednostavne večeri sa tobom su mi najdraže." },
+    { photo: "photos/8.jpg", label: "Ukradeni poljubac",
+      text: "Ovakvih poljubaca mi nikad neće biti dosta." },
+    { photo: "photos/9.jpg", label: "Bez slikanja!",
+      text: "Ti se kriješ, ja se smejem. Čak su i mutne slike sa tobom za mene savršene." },
+  ],
 
-      <p class="credits-label reveal">nastavak uskoro</p>
-      <ul class="sequel reveal">
-        <li>mnogo mnogo zagrljaja</li>
-      </ul>
+  letter: {
+    greeting: "Duša mua,",
+    paragraphs: [
+      "Pre sest meseci ne mi bilo jasno da jena osoba moze da promeni kako cef svet izgleda, a onda ti.",
+      "Ti si moj mir, moj omiljeni smeh i prva osoba kua sakam sve da kazem. So tebe i najobicnije vece postanuje nesto so sakam da zapamtim zauvek.",
+      "Fala ti za sve zvezde na ovije nebo i za sve one kuje tek trebe da prozivime. Jedva cekam da zajeno so nih ispunime cef svemir.",
+      "Od sve zvezde vo svemir, ti si moja omiljena.",
+      "Srećna 6 mesečnica, Emina. Te voljim. ❤️",
+    ],
+    signature: "Zauvek samo tvoj Ismet",
+  },
 
-      <p class="credits-love reveal">te voljim, dušo mua <span aria-hidden="true">♥&#xFE0E;</span></p>
+  final: {
+    title: "Srećna 6 mesečnica",
+    text: "Kilometri nas dele, ali gledame vo isto nebo. Večeras pogledaj zvezde i ja ce gljedam vo nih, misleći na tebe.",
+    small: "Te voljim",
+  },
+};
+/* ===================================================================== */
 
-      <div class="flowers reveal">
-        <img class="bouquet" src="assets/bouquet-pink.png" alt="Buket rozih ruža i belih karanfila" loading="lazy" decoding="async">
-        <p class="flowers-note">za tebe <span class="aesthetic-heart" aria-hidden="true">ᥫ᭡</span></p>
-      </div>
+const $ = (s) => document.querySelector(s);
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep = (ms) => new Promise((r) => setTimeout(r, reduceMotion ? Math.min(ms, 200) : ms));
 
-      <div class="credits-actions reveal">
-        <button class="pill" id="replay" type="button">pogledaj ponovo ↺</button>
-      </div>
-    </div>
+/* ---------- typewriter: pauses longer on punctuation, like someone writing by hand ---------- */
+async function type(el, text, speed = 55) {
+  el.textContent = "";
+  el.classList.add("typing");
+  for (const ch of text) {
+    el.textContent += ch;
+    if (reduceMotion) continue;
+    const pause = ".,…—!?".includes(ch) ? speed * 7 : speed + Math.random() * 25;
+    await new Promise((r) => setTimeout(r, pause));
+  }
+  el.classList.remove("typing");
+}
 
-    <button class="vinyl" id="vinyl" type="button" aria-label="Pusti našu pesmu" aria-pressed="false" hidden></button>
-  </section>
+function show(id) {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === id));
+}
 
-  <audio id="song" src="assets/you-and-i.mp3" preload="none" loop></audio>
+/* =====================================================================
+   Background sky: twinkling stars + the occasional shooting star
+   ===================================================================== */
+const cv = $("#sky");
+const ctx = cv.getContext("2d");
+let W, H, stars = [], shooting = null;
+let skyAlpha = 0, skyTarget = 0.35;
 
-  <script src="bioskop.js"></script>
+function resize() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const n = Math.round((W * H) / 2200);
+  stars = Array.from({ length: n }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() < 0.08 ? 1.2 + Math.random() * 0.8 : 0.25 + Math.random() * 0.9,
+    phase: Math.random() * Math.PI * 2,
+    speed: 0.4 + Math.random() * 1.6,
+    warm: Math.random() < 0.15,
+  }));
+}
+
+function frame(t) {
+  skyAlpha += (skyTarget - skyAlpha) * 0.015;
+  ctx.clearRect(0, 0, W, H);
+  for (const s of stars) {
+    const tw = reduceMotion ? 0.8 : 0.45 + 0.55 * (0.5 + 0.5 * Math.sin((t / 1000) * s.speed + s.phase));
+    ctx.globalAlpha = tw * skyAlpha;
+    ctx.fillStyle = s.warm ? "#ffe2b8" : "#fff8e7";
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  if (!reduceMotion && !shooting && skyAlpha > 0.6 && Math.random() < 0.0025) {
+    shooting = { x: Math.random() * W * 0.6, y: Math.random() * H * 0.35, vx: 7 + Math.random() * 4, vy: 2.5 + Math.random() * 2, life: 1 };
+  }
+  if (shooting) {
+    const s = shooting, tail = 14;
+    const g = ctx.createLinearGradient(s.x, s.y, s.x - s.vx * tail, s.y - s.vy * tail);
+    g.addColorStop(0, "rgba(255,248,231,1)");
+    g.addColorStop(1, "rgba(255,248,231,0)");
+    ctx.globalAlpha = s.life * skyAlpha;
+    ctx.strokeStyle = g; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x - s.vx * tail, s.y - s.vy * tail); ctx.stroke();
+    s.x += s.vx; s.y += s.vy; s.life -= 0.014;
+    if (s.life <= 0) shooting = null;
+  }
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(frame);
+}
+addEventListener("resize", resize);
+resize();
+requestAnimationFrame(frame);
+
+/* =====================================================================
+   The heart: memory stars sit ON a heart curve, so it's hidden in plain
+   sight until the lines connect them at the end.
+   ===================================================================== */
+function heartPoint(t) {
+  const x = 16 * Math.sin(t) ** 3;
+  const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+  return { x: 50 + x * 2.6, y: 50 - (y + 2.5) * 2.6 }; // map into a 0–100 box
+}
+
+(function buildHeart() {
+  const pts = [];
+  for (let i = 0; i <= 240; i++) pts.push(heartPoint((i / 240) * Math.PI * 2));
+  const d = "M" + pts.map((p) => `${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" L") + " Z";
+  $("#heartPath").setAttribute("d", d);
+  $("#heartFill").setAttribute("d", d);
+})();
+
+const box = $("#heartBox");
+const N = CONFIG.memories.length;
+const seen = new Set();
+
+CONFIG.memories.forEach((m, i) => {
+  const p = heartPoint(((i + 0.5) / N) * Math.PI * 2);
+  const b = document.createElement("button");
+  b.className = "mstar";
+  b.style.left = p.x + "%";
+  b.style.top = p.y + "%";
+  b.style.setProperty("--d", (i * 0.37).toFixed(2) + "s");
+  b.setAttribute("aria-label", `Uspomena ${i + 1}`);
+  b.addEventListener("click", () => openMemory(i));
+  box.appendChild(b);
+  new Image().src = m.photo; // preload, so the photo is there the moment the star is tapped
+});
+
+/* ---------- memory card ---------- */
+let current = -1;
+let finaleStarted = false;
+function openMemory(i) {
+  current = i;
+  const m = CONFIG.memories[i];
+  $("#memImg").src = m.photo;
+  $("#memLabel").textContent = m.label;
+  $("#memText").textContent = m.text;
+  $("#memory").classList.add("open");
+  $("#memClose").focus({ preventScroll: true });
+}
+function closeMemory() {
+  if (current < 0) return;
+  $("#memory").classList.remove("open");
+  box.children[current + 1].classList.add("seen"); // +1: the svg is the first child
+  seen.add(current);
+  current = -1;
+  $("#counter").textContent = CONFIG.lines.counter(seen.size, N);
+  if (seen.size === N && !finaleStarted) { finaleStarted = true; finale(); } // re-opening a star later must not restart it
+}
+$("#memClose").addEventListener("click", closeMemory);
+$("#memory").addEventListener("click", (e) => { if (e.target.id === "memory") closeMemory(); });
+addEventListener("keydown", (e) => { if (e.key === "Escape") closeMemory(); });
+
+/* =====================================================================
+   Music (uses music.mp3 if it's there; silently skips if not)
+   ===================================================================== */
+const music = $("#music");
+let musicOn = false;
+function startMusic() {
+  music.volume = 0;
+  music.play().then(() => {
+    musicOn = true;
+    $("#muteBtn").classList.add("show");
+    let v = 0;
+    const fade = setInterval(() => { v = Math.min(0.55, v + 0.02); music.volume = v; if (v >= 0.55) clearInterval(fade); }, 120);
+  }).catch(() => {});
+}
+$("#muteBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  music.muted = !music.muted;
+  $("#muteBtn").textContent = music.muted ? "♪̸" : "♪";
+  $("#muteBtn").setAttribute("aria-label", music.muted ? "Uključi muziku" : "Isključi muziku");
+});
+
+/* =====================================================================
+   The story
+   ===================================================================== */
+let introReady = false;
+
+async function intro() {
+  await sleep(1200);
+  await type($("#introA"), CONFIG.lines.introA, 80);
+  await sleep(900);
+  await type($("#introB"), CONFIG.lines.introB, 65);
+  await sleep(700);
+  $("#introHint").classList.add("show");
+  introReady = true;
+}
+
+$("#intro").addEventListener("click", () => {
+  if (!introReady) return;
+  introReady = false;
+  startMusic();
+  beginSky();
+});
+
+async function beginSky() {
+  skyTarget = 1;
+  show("skyScreen");
+  await sleep(1800);
+  await type($("#caption"), CONFIG.lines.sky, 50);
+  await sleep(1400);
+  [...box.querySelectorAll(".mstar")].forEach((s, i) => setTimeout(() => s.classList.add("show"), i * 260));
+  await sleep(N * 260 + 600);
+  await type($("#caption"), CONFIG.lines.find, 45);
+  $("#counter").textContent = CONFIG.lines.counter(0, N);
+}
+
+async function finale() {
+  await sleep(900);
+  $("#counter").style.opacity = 0;
+  await type($("#caption"), CONFIG.lines.count, 55);
+  await sleep(900);
+
+  const path = $("#heartPath");
+  const len = path.getTotalLength();
+  path.style.strokeDasharray = len;
+  path.style.strokeDashoffset = len;
+  path.getBoundingClientRect(); // commit the start state before animating
+  path.classList.add("draw");
+  path.style.strokeDashoffset = 0;
+  $("#heartFill").classList.add("on");
+  await sleep(5200);
+
+  await type($("#caption"), CONFIG.lines.leads, 60);
+  await sleep(1200);
+  $("#toLetter").classList.remove("hidden");
+}
+
+$("#toLetter").addEventListener("click", letter);
+
+async function letter() {
+  $("#toLetter").classList.add("hidden");
+  show("letterScreen");
+  skyTarget = 0.55;
+  await sleep(1700);
+  const paper = $("#paper");
+  const add = (cls) => { const p = document.createElement("p"); if (cls) p.className = cls; paper.appendChild(p); return p; };
+  const follow = () => { paper.scrollTop = paper.scrollHeight; };
+  const scroller = setInterval(follow, 250);
+
+  await type(add("greet"), CONFIG.letter.greeting, 90);
+  for (const para of CONFIG.letter.paragraphs) {
+    await sleep(500);
+    await type(add(), para, 38);
+  }
+  await sleep(600);
+  await type(add("sign"), CONFIG.letter.signature, 90);
+  clearInterval(scroller);
+  follow();
+  await sleep(1400);
+  $("#moreBtn").classList.remove("hidden");
+}
+
+$("#moreBtn").addEventListener("click", async () => {
+  $("#moreBtn").classList.add("hidden");
+  skyTarget = 1;
+  show("finalScreen");
+  $("#finalTitle").textContent = CONFIG.final.title;
+  $("#finalText").textContent = CONFIG.final.text;
+  $("#finalSmall").textContent = CONFIG.final.small;
+  await sleep(1400);
+  for (const id of ["finalTitle", "finalText", "finalSmall"]) {
+    $("#" + id).classList.add("in");
+    await sleep(1500);
+  }
+  hearts();
+});
+
+function hearts() {
+  if (reduceMotion) return;
+  const spawn = () => {
+    const h = document.createElement("span");
+    h.className = "floating-heart";
+    h.textContent = Math.random() < 0.8 ? "♥" : "✦";
+    h.style.left = Math.random() * 100 + "vw";
+    h.style.fontSize = 10 + Math.random() * 22 + "px";
+    h.style.animationDuration = 7 + Math.random() * 6 + "s";
+    h.style.setProperty("--drift", (Math.random() * 120 - 60).toFixed(0) + "px");
+    h.style.setProperty("--rot", (Math.random() * 60 - 30).toFixed(0) + "deg");
+    document.body.appendChild(h);
+    h.addEventListener("animationend", () => h.remove());
+  };
+  setInterval(spawn, 450);
+}
+
+intro();
+</script>
 </body>
 </html>
